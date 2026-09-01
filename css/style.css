@@ -19,6 +19,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* El atributo hidden siempre debe ocultar (las clases con display:flex/grid
+   lo anulan si no ponemos esto). */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 body {
