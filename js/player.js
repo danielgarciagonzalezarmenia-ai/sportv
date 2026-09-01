@@ -73,10 +73,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---------- Estado ----------
+  function showLiveOrNoStream() {
+    if (current.embed && current.embed.trim()) {
+      showFrame(current.embed.trim());
+    } else {
+      showMessage('Sin transmisión disponible', 'No se encontraron transmisiones para este partido.');
+    }
+  }
+
   function render() {
     if (!current) return;
     const st = stateOf(current);
 
+    // Sin hora de inicio: depende del estado manual configurado.
+    if (!st.hasStart) {
+      clearInterval(timer);
+      if (st.status === 'FINALIZADO') {
+        setStatus('FINALIZADO');
+        showMessage('Evento finalizado', 'El evento ya finalizó. Gracias por acompañarnos.');
+      } else {
+        setStatus(st.status);
+        showLiveOrNoStream();
+      }
+      return;
+    }
+
+    // Con hora de inicio: auto-cálculo.
     if (st.finished) {
       clearInterval(timer);
       setStatus('FINALIZADO');
@@ -91,14 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Ventana en vivo: del reproductor o pantalla "sin transmisión".
+    // Ventana en vivo: reproductor o pantalla "sin transmisión".
     setStatus('EN VIVO');
     clearInterval(timer);
-    if (current.embed && current.embed.trim()) {
-      showFrame(current.embed.trim());
-    } else {
-      showMessage('Sin transmisión disponible', 'No se encontraron transmisiones para este partido.');
-    }
+    showLiveOrNoStream();
   }
 
   // ---------- Inicio ----------
