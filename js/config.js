@@ -10,6 +10,6 @@
    ========================================================================== */
 
 const CONFIG = {
-  GOOGLE_APP_URL: 'https://script.google.com/macros/s/AKfycbw7u5mkDRCz_KSv4iwmIslIVLpevJe_r_qIMZwXgH_0CbF7z-BsWdwjRb01lwXwKrcl9Q/exec',// PEGA AQUÍ LA URL DEL WEB APP  ej: 'https://script.google.com/macros/s/xxxx/exec'
+  GOOGLE_APP_URL: 'https://script.google.com/macros/s/AKfycbw7u5mkDRCz_KSv4iwmIslIVLpevJe_r_qIMZwXgH_0CbF7z-BsWdwjRb01lwXwKrcl9Q/exec',
   ADMIN_PASS: 'admin123'
 };

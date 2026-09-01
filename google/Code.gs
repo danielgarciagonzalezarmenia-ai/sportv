@@ -23,10 +23,32 @@
 
 const SHEET_NAME = 'Eventos';
 const COLUMNS = ['id', 'title', 'category', 'status', 'embed', 'image'];
+const PROP_SHEET_ID = 'SPORTV_SHEET_ID';
 
 // ---------------------------------------------------------------- utilidades
+// Devuelve (o crea y recuerda) el spreadsheet donde se guardan los eventos.
+// Como el script puede ser independiente (Standalone), NO usamos
+// getActiveSpreadsheet() como única vía: si no hay hoja activa, creamos una
+// nueva y guardamos su ID en Script Properties para reusarla en todas las
+// llamadas. Así los datos no se dividen entre ejecuciones.
+function getSpreadsheet_() {
+  const props = PropertiesService.getScriptProperties();
+  const storedId = props.getProperty(PROP_SHEET_ID);
+
+  if (storedId) {
+    try { return SpreadsheetApp.openById(storedId); } catch (e) { /* seguir */ }
+  }
+
+  let ss = null;
+  try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) { ss = null; }
+  if (!ss) ss = SpreadsheetApp.create('Sportv Eventos');
+
+  props.setProperty(PROP_SHEET_ID, ss.getId());
+  return ss;
+}
+
 function getSheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet_();
   let sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);
@@ -126,14 +148,14 @@ function doGet() {
 }
 
 function doPost(e) {
-  if (!checkPass_()) {
+  const body = JSON.parse(e.postData.contents);
+  if (!checkPass_(body.pass)) {
     throw new Error('Contraseña de administrador inválida.');
   }
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     const sh = getSheet_();
-    const body = JSON.parse(e.postData.contents);
     const action = body.action;
     if (action === 'add') return jsonResponse_(addEvent_(sh, body.evento));
     if (action === 'update') return jsonResponse_(updateEvent_(sh, body.evento));
