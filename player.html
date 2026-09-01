@@ -31,11 +31,22 @@
     <section class="player">
       <div class="player__video">
         <iframe id="liveFrame" src="" title="Transmisión en directo" allowfullscreen allow="encrypted-media; picture-in-picture; fullscreen"></iframe>
+        <div id="stageCover" class="stage-cover" hidden>
+          <div id="coverCountdown" class="cover-countdown">
+            <p class="cover__kicker">El evento comienza en</p>
+            <div id="countdown" class="countdown">--:--:--</div>
+            <p id="coverMeta" class="cover__meta"></p>
+          </div>
+          <div id="coverMessage" class="cover-message" hidden>
+            <h3 id="coverTitle" class="cover__title"></h3>
+            <p id="coverText" class="cover__text"></p>
+          </div>
+        </div>
       </div>
       <div class="player__info">
         <span id="playerStatus" class="player__status">EN VIVO</span>
         <h1 id="playerTitle" class="player__title">Evento</h1>
-        <p class="player__hint">Si la transmisión no se ve, la calidad varía según el origen del canal.</p>
+        <p class="player__hint" id="playerHint">Esperando el inicio del evento.</p>
       </div>
     </section>
 
@@ -57,6 +68,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/store.js"></script>
   <script src="js/player.js"></script>
   <script>

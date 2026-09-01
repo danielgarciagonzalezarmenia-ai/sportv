@@ -56,18 +56,23 @@
             <input type="text" id="fldCategory" placeholder="Futbol, Beisbol, Tenis...">
           </div>
           <div class="field">
-            <label>Estado</label>
+            <label>Estado (manual, opcional)</label>
             <select id="fldStatus">
-              <option value="EN VIVO">EN VIVO</option>
-              <option value="PROXIMO">PROXIMO</option>
               <option value="HOY">HOY</option>
+              <option value="PROXIMO">PROXIMO</option>
+              <option value="EN VIVO">EN VIVO</option>
               <option value="FINALIZADO">FINALIZADO</option>
             </select>
           </div>
         </div>
         <div class="field">
-          <label>URL del iframe (embed)</label>
-          <input type="url" id="fldEmbed" placeholder="https://.../embed/..." required>
+          <label>Hora de inicio (hora Colombia — se convierte a la hora local de cada visitante)</label>
+          <input type="datetime-local" id="fldStart">
+        </div>
+        <div class="field">
+          <label>URL del iframe (embed) — puedes dejarla vacía y agregarla después</label>
+          <input type="url" id="fldEmbed" placeholder="https://.../embed/...">
+          <small class="field__hint" style="color:var(--muted);font-size:12px">Si la dejas vacía, el reproductor mostrará "Sin transmisión disponible".</small>
         </div>
         <div class="field">
           <label>URL de la imagen (opcional)</label>
@@ -101,6 +106,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/store.js"></script>
   <script src="js/admin.js"></script>
 </body>

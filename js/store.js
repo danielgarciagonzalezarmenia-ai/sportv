@@ -75,5 +75,6 @@ function sanitize(e) {
   if (e.status !== undefined) out.status = String(e.status);
   if (e.embed !== undefined) out.embed = String(e.embed);
   if (e.image !== undefined) out.image = String(e.image);
+  if (e.start !== undefined && e.start !== null && e.start !== '') out.start = Number(e.start);
   return out;
 }

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fldTitle = document.getElementById('fldTitle');
   const fldCategory = document.getElementById('fldCategory');
   const fldStatus = document.getElementById('fldStatus');
+  const fldStart = document.getElementById('fldStart');
   const fldEmbed = document.getElementById('fldEmbed');
   const fldImage = document.getElementById('fldImage');
   const saveBtn = document.getElementById('saveBtn');
@@ -101,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fldId.value = '';
     formTitle.textContent = 'Nuevo evento';
     saveBtn.textContent = 'Guardar evento';
-    fldStatus.value = 'EN VIVO';
+    fldStatus.value = 'HOY';
+    fldStart.value = '';
   }
 
   form.addEventListener('submit', async (ev) => {
@@ -111,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: fldTitle.value.trim(),
       category: fldCategory.value.trim(),
       status: fldStatus.value,
+      start: fldStart.value ? colombiaToUTC(fldStart.value) : null,
       embed: fldEmbed.value.trim(),
       image: fldImage.value.trim()
     };
@@ -168,7 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fldId.value = e.id;
     fldTitle.value = e.title || '';
     fldCategory.value = e.category || '';
-    fldStatus.value = e.status || 'EN VIVO';
+    fldStatus.value = e.status || 'HOY';
+    fldStart.value = utcToColombiaInput(e.start);
     fldEmbed.value = e.embed || '';
     fldImage.value = e.image || '';
     formTitle.textContent = 'Editar evento';

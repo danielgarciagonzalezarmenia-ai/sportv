@@ -30,17 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     grid.innerHTML = filtered.map(e => {
-      const isLive = /en vivo|live|directo/i.test(e.status || '');
-      const statusClass = isLive ? 'event__status--live' : '';
+      const st = stateOf(e);
+      const isLive = st.status === 'EN VIVO';
+      const statusClass = isLive ? 'event__status--live' : (st.status === 'FINALIZADO' ? 'event__status--off' : '');
       const img = e.image || fallbackImg;
+      const when = e.start ? formatLocal(Number(e.start)) : '';
       return `
         <a class="event" href="player.html?id=${e.id}">
           <div class="event__thumb">
             <img src="${img}" alt="${e.title}" loading="lazy" onerror="this.src='${fallbackImg}'">
-            <span class="event__status ${statusClass}">${e.status || 'HOY'}</span>
+            <span class="event__status ${statusClass}">${st.status}</span>
           </div>
           <div class="event__body">
-            <p class="event__category">${e.category || 'Deportes'}</p>
+            <p class="event__category">${e.category || 'Deportes'}${when ? ' · ' + when : ''}</p>
             <h3 class="event__title">${e.title}</h3>
           </div>
         </a>
