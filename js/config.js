@@ -7,10 +7,10 @@
    ========================================================================== */
 
 const FIREBASE = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: ''
+  apiKey: 'AIzaSyDksOPdCP6hXOLnxGdoE5XddzKsRCbqjFI',
+  authDomain: 'sportv-a5ca9.firebaseapp.com',
+  projectId: 'sportv-a5ca9',
+  storageBucket: 'sportv-a5ca9.firebasestorage.app',
+  messagingSenderId: '128017262899',
+  appId: '1:128017262899:web:2b5ddd16c219fe2706b646'
 };
