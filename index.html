@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sportv Latam — Ver deportes en vivo | partidos online</title>
+  <meta name="description" content="Sportv Latam: mira tus partidos y eventos deportivos en directo, gratis y en un solo lugar. Futbol, tenis y más.">
+  <meta name="keywords" content="sportv latam, sportvlatam, deportes en vivo, ver partidos online, futbol en vivo, stream deportes">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#000000">
+  <meta name="google-site-verification" content="">
+  <link rel="canonical" href="https://latam.sportv.gt.tc/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sportv Latam">
+  <meta property="og:title" content="Sportv Latam — Ver deportes en vivo">
+  <meta property="og:description" content="Mira tus partidos y eventos deportivos en directo, gratis y en un solo lugar.">
+  <meta property="og:url" content="https://latam.sportv.gt.tc/">
+  <meta property="og:locale" content="es_LA">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sportv Latam — Ver deportes en vivo">
+  <meta name="twitter:description" content="Mira tus partidos y eventos deportivos en directo, gratis y en un solo lugar.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sportv Latam",
+    "alternateName": "sportvlatam",
+    "url": "https://latam.sportv.gt.tc/",
+    "inLanguage": "es"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">SPORTV</a>
+      <nav class="nav">
+        <a href="index.html" class="nav__link is-active">Inicio</a>
+        <a href="#" class="nav__link">En directo</a>
+        <a href="#" class="nav__link">Resultados</a>
+      </nav>
+      <div class="header__grow"></div>
+      <input type="text" id="searchInput" class="search" placeholder="Buscar evento...">
+    </div>
+  </header>
+
+  <main class="container main">
+    <section class="hero">
+      <p class="hero__tag">Transmisiones en vivo</p>
+      <h1 class="hero__title">Todo el deporte,<br>en un solo lugar.</h1>
+      <p class="hero__text">Mira tus partidos y eventos deportivos favoritos en tiempo real, con la mejor calidad.</p>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Hoy</h2>
+        <span id="eventCount" class="section__count">Cargando...</span>
+      </div>
+      <div id="eventGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">Sportv Latam</span>
+      <p class="footer__text">© <span id="year"></span> Sportv. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>

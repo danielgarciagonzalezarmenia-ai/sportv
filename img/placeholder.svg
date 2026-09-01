@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14171d"/>
+      <stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#g)"/>
+  <circle cx="320" cy="150" r="44" fill="none" stroke="#ff3b5c" stroke-width="6" opacity="0.9"/>
+  <path d="M303 138 L337 138 L337 132 L347 150 L337 168 L337 162 L303 162 Z" fill="#ff3b5c"/>
+  <text x="320" y="252" font-family="Poppins, Arial, sans-serif" font-size="22" font-weight="700" fill="#8b93a4" text-anchor="middle" letter-spacing="6">SPORTV</text>
+</svg>

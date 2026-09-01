@@ -1,0 +1,13 @@
+# Dependencias / nodo
+node_modules/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Kilo / editor
+.kilo/
+
+# No subir credenciales del usuario
+js/config.local.js

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sportv Latam</title>
+  <meta name="description" content="Sportv Latam: mira tus partidos y eventos deportivos en directo.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://latam.sportv.gt.tc/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">SPORTV</a>
+      <nav class="nav">
+        <a href="index.html" class="nav__link">Inicio</a>
+        <a href="index.html" class="nav__link">En directo</a>
+        <a href="index.html" class="nav__link">Resultados</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main player-main">
+    <section class="player">
+      <div class="player__video">
+        <iframe id="liveFrame" src="" title="Transmisión en directo" allowfullscreen allow="encrypted-media; picture-in-picture; fullscreen"></iframe>
+      </div>
+      <div class="player__info">
+        <span id="playerStatus" class="player__status">EN VIVO</span>
+        <h1 id="playerTitle" class="player__title">Evento</h1>
+        <p class="player__hint">Si la transmisión no se ve, la calidad varía según el origen del canal.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Otros eventos</h2>
+      </div>
+      <div id="relatedGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">Sportv Latam</span>
+      <p class="footer__text">© <span id="year"></span> Sportv. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/player.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>

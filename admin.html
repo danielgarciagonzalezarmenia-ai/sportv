@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sportv — Panel Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">SPORTV</a>
+      <nav class="nav">
+        <a href="index.html" class="nav__link">Ver web</a>
+        <a href="admin.html" class="nav__link is-active">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main admin-main" id="loginView">
+    <div class="login">
+      <h2>Panel Admin</h2>
+      <p>Ingresa la contraseña para gestionar los eventos.</p>
+      <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+      <p class="login__error" id="loginError">Contraseña incorrecta.</p>
+      <button class="btn btn--accent" id="loginBtn">Entrar</button>
+    </div>
+  </main>
+
+  <main class="container main admin-main" id="panelView" hidden>
+    <div class="admin-bar">
+      <h2>Gestión de eventos</h2>
+      <button class="btn btn--ghost btn--sm" id="logoutBtn" type="button">Cerrar sesión</button>
+    </div>
+    <div class="msg" id="flash"></div>
+
+    <div class="panel">
+      <!-- Formulario -->
+      <form class="form" id="eventForm">
+        <h3 id="formTitle">Nuevo evento</h3>
+        <input type="hidden" id="fldId">
+        <div class="field">
+          <label>Título del evento</label>
+          <input type="text" id="fldTitle" placeholder="Ej: Barcelona vs Real Madrid" required>
+        </div>
+        <div class="field--row">
+          <div class="field">
+            <label>Deporte / Categoría</label>
+            <input type="text" id="fldCategory" placeholder="Futbol, Beisbol, Tenis...">
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="fldStatus">
+              <option value="EN VIVO">EN VIVO</option>
+              <option value="PROXIMO">PROXIMO</option>
+              <option value="HOY">HOY</option>
+              <option value="FINALIZADO">FINALIZADO</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>URL del iframe (embed)</label>
+          <input type="url" id="fldEmbed" placeholder="https://.../embed/..." required>
+        </div>
+        <div class="field">
+          <label>URL de la imagen (opcional)</label>
+          <input type="url" id="fldImage" placeholder="https://.../imagen.jpg">
+        </div>
+        <div class="form__actions">
+          <button type="submit" class="btn btn--accent" id="saveBtn">Guardar evento</button>
+          <button type="button" class="btn btn--ghost" id="resetBtn">Limpiar</button>
+        </div>
+      </form>
+
+      <!-- Lista -->
+      <div class="list">
+        <div class="list__head">
+          <h3>Eventos actuales</h3>
+          <span id="listCount">0</span>
+        </div>
+        <div id="eventList"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__brand">Sportv Latam</span>
+      <p class="footer__text">Panel de administración</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
