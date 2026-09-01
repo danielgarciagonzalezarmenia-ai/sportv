@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => {
       console.error(err);
-      showEmpty(CONFIG.GOOGLE_APP_URL
-        ? 'No se pudo conectar con el panel de eventos. Intenta recargar.'
-        : 'El panel aún no está publicado. Agrega tu URL en js/config.js (ver GUIA-ADMIN.md).');
+      showEmpty(FIREBASE.apiKey
+        ? 'No se pudo conectar con Firestore. Intenta recargar.'
+        : 'Configura Firebase en js/config.js (ver GUIA-ADMIN.md).');
     });
 });

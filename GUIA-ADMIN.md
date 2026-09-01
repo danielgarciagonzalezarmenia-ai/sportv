@@ -1,76 +1,105 @@
-# SPORTV — Guía para configurar el panel admin (Google Sheets)
+# SPORTV — Guía de configuración con Firebase
 
-La web ahora lee y escribe sus eventos en un **Google Sheet** mediante un
-**Google Apps Script** (funciona como una mini API). Hace falta configurarlo
-**una sola vez**.
+El panel admin ahora usa **Firebase**: **Authentication** para el inicio de
+sesión y **Firestore** para guardar los eventos. Ya **no** se usa Google
+Apps Script ni una hoja de cálculo. La web pública solo lee (acceso público);
+el panel escribe autenticado.
 
-Esto es estático y hosteado gratis (vía `subir.ps1` / GitHub Pages). No hay
-servidor propio, por eso usamos Google Sheets como base de datos.
+Configúralo **una sola vez**.
 
 ---
 
-## Paso 1 — Crear el Google Apps Script
+## Paso 1 — Crear el proyecto en Firebase
 
-1. Ve a <https://script.google.com/> → botón **Nuevo proyecto**.
-2. Reemplaza todo el código que trae por el contenido del archivo
-   **`google/Code.gs`** de este proyecto.
-3. Dale un nombre al proyecto (ej: *Sportv Eventos*).
+1. Ve a <https://console.firebase.google.com/> → **Agregar proyecto**.
+2. Ponle un nombre (ej: *Sportv*). Google Analytics: opcional (puedes
+   desactivarlo). Pulsa **Crear proyecto**.
 
-## Paso 2 — Publicarlo como Web App
+## Paso 2 — Registrar una app web
 
-1. En el editor pulsa **Implementar → Nueva implementación**.
-2. Tipo de implementación: **Aplicación web**.
-3. Configuración:
-   - **Descripción**: lo que quieras (ej: "v1").
-   - **Ejecutar como**: **Yo** (es tu hoja de cálculo).
-   - **Acceso**: **Cualquier usuario**.
-4. Pulsa **Implementar**.
-5. Te pedirá autorización: pulsa *Permitir* (aunque anuncie que no está
-   verificado).
-6. Al final copia la **URL del Web App** (termina en `/exec`).
-
-> Google mostrará la pantalla de "Proyecto no verificado / aplicación no
-> segura". Es normal para scripts personales. Pulsa **Avanzado → Acceder a
-> [tu proyecto]** para completar.
-
-## Paso 3 — Conectar la web
-
-1. Abre **`js/config.js`**.
-2. Pega la URL copiada en `GOOGLE_APP_URL` entre comillas:
+1. En la consola, entra a tu proyecto.
+2. Clic en el ícono `</>` (**) Web**) para agregar una app web.
+3. Ponle un apodo (ej: *sportv-web*).
+4. Registra la app; **copia el bloque de configuración** que Firebase te
+   muestra (es parecido a esto):
 
 ```js
-const CONFIG = {
-  GOOGLE_APP_URL: 'https://script.google.com/macros/s/TU_ID/exec',
-  ADMIN_PASS: 'admin123'
+const firebaseConfig = {
+  apiKey: "AIza...",
+  authDomain: "tu-proyecto.firebaseapp.com",
+  projectId: "tu-proyecto",
+  storageBucket: "tu-proyecto.appspot.com",
+  messagingSenderId: "123456",
+  appId: "1:123456:web:abc123"
 };
 ```
 
+5. Abre **`js/config.js`** y pega esos valores dentro del objeto `FIREBASE`
+   (sin `const firebaseConfig`, solo los campos clave-valor).
+
+```js
+const FIREBASE = {
+  apiKey: 'AIza...',
+  authDomain: 'tu-proyecto.firebaseapp.com',
+  projectId: 'tu-proyecto',
+  storageBucket: 'tu-proyecto.appspot.com',
+  messagingSenderId: '123456',
+  appId: '1:123456:web:abc123'
+};
+```
+
+6. **Quita el bloque de código de la app web** en la consola para no tener
+   interferencias si lo copiaste en tu HTML (opcional).
+
+## Paso 3 — Habilitar el inicio de sesión por correo
+
+1. En la consola Firebase: **Compilación → Authentication** → **Sign-in method**.
+2. Si te lo pide, elige "Empezar" → activa el proveedor **Correo/Contraseña**.
 3. Guarda.
 
-> Si estabas corriendo la web desde un servidor local, **recarga con Ctrl+F5**
-> para saltarte la caché (hay Service Worker + anti-caché).
+## Paso 4 — Crear la cuenta de administrador
 
-## Paso 4 — Probar
+1. En **Authentication → Users → Agregar usuario**.
+2. Pon el **correo y contraseña** que usarás para entrar al panel.
+   Ejemplo: `admin@tudominio.com` / `UnaClaveSegura123`
 
-- Abre **`admin.html`** → entra con la contraseña de `ADMIN_PASS`
-  (por defecto `admin123`).
-- Agrega un evento: título, deporte, estado, y la **URL del iframe** (el
-  *embed* del canal).
-- Abre **`index.html`** → verás el evento publicado como tarjeta.
+## Paso 5 — Crear Firestore y publicar reglas
+
+1. En la consola: **Compilación → Firestore Database → Crear base de datos**.
+2. Modo de **producción** (recomendado). Zona: cualquiera (ej. `nam5`).
+3. Cuando exista, ve a la pestaña **Reglas**.
+4. Reemplaza las reglas por el contenido del archivo **`firestore.rules`**
+   de este proyecto y pulsa **Publicar**.
+
+Estas reglas permiten **leer a cualquiera** y **escribir solo a usuarios
+autenticados** (los que tú creaste).
+
+## Paso 6 — Comprobar
+
+- Abre **`admin.html`** → entra con el correo/contraseña del **Paso 4**.
+  (Ahora es un login real: también funciona con la tecla **Enter**.)
+- Agrega un evento: título, deporte, estado y la **URL del iframe**.
+- Abre **`index.html`** → el evento aparece como tarjeta.
 - Pulsa la tarjeta → se abre **`player.html`** reproduciendo tu iframe.
 
 ---
 
-## Notas útiles
+## Notas de seguridad
 
-- **Cambiar contraseña**: edítala en `js/config.js` (`ADMIN_PASS`) **y**
-  también en `google/Code.gs` (función `checkPass_`). Deben coincidir.
-- **La hoja que se usa** es la que venga "activa" en el spreadsheet vinculado
-  al script. Puedes abrirla desde Vínculos de Cloud / Ejecutar para ver/editar
-  los eventos a mano si quieres.
-- **La URL final quedaría expuesta** (la web pública la necesita para leer).
-  Escribir nuevos eventos requiere la contraseña, que se valida en el script.
-  Si pones el panel en tu web pública, cualquiera podría *leer* (necesario)
-  pero no *escribir* sin contraseña.
-- Si un día quieres **ocultar** el panel, no subas `admin.html` con
-  `subir.ps1` o protégelo con una página que requiera algo antes de redirigir.
+- **Público lee, el panel escribe.** Las reglas requieren sesión para
+  cualquier escritura, así que nadie puede modificar eventos sin entrar.
+- La web pública necesita la `apiKey` para leer Firestore; Firebase usa eso
+  más las reglas para el control real de acceso, así que tener "expuesto" el
+  `apiKey` es normal y seguro en este esquema (las reglas hacen el trabajo).
+- Si quieres restringir la escritura a un **único usuario** (más estricto),
+  cambia en `firestore.rules` `allow write: if request.auth != null;` por
+  `allow write: if request.auth.uid == 'UID_DEL_ADMIN';`, y pon ahí el UID que
+  aparece en Authentication → usuario → ID de usuario.
+
+## Subir cambios
+
+Después de modificar `js/config.js` con tus datos, publica:
+
+```
+.\subir.ps1 "configurar firebase"
+```

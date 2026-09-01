@@ -24,10 +24,13 @@
   <main class="container main admin-main" id="loginView">
     <div class="login">
       <h2>Panel Admin</h2>
-      <p>Ingresa la contraseña para gestionar los eventos.</p>
-      <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
-      <p class="login__error" id="loginError">Contraseña incorrecta.</p>
-      <button class="btn btn--accent" id="loginBtn">Entrar</button>
+      <p>Inicia sesión con tu cuenta para gestionar los eventos.</p>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Correo" autocomplete="email" required>
+        <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password" required>
+        <p class="login__error" id="loginError">Correo o contraseña incorrectos.</p>
+        <button type="submit" class="btn btn--accent" id="loginBtn">Entrar</button>
+      </form>
     </div>
   </main>
 
@@ -94,6 +97,9 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="js/config.js"></script>
   <script src="js/store.js"></script>
   <script src="js/admin.js"></script>

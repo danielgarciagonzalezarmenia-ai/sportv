@@ -1,16 +1,20 @@
 /* ============================================================================
    SPORTV — Lógica del panel admin (admin.html)
-   Lista, agrega, edita y borra eventos contra el store (Google Sheets).
+   Login con Firebase Auth + CRUD de eventos en Firestore.
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // --- Login ---
   const loginView = document.getElementById('loginView');
   const panelView = document.getElementById('panelView');
+  const loginForm = document.getElementById('loginForm');
+  const loginEmail = document.getElementById('loginEmail');
   const loginPass = document.getElementById('loginPass');
   const loginError = document.getElementById('loginError');
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
 
+  // --- Formulario de eventos ---
   const form = document.getElementById('eventForm');
   const formTitle = document.getElementById('formTitle');
   const fldId = document.getElementById('fldId');
@@ -21,13 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const fldImage = document.getElementById('fldImage');
   const saveBtn = document.getElementById('saveBtn');
   const resetBtn = document.getElementById('resetBtn');
+
+  // --- Lista ---
   const eventList = document.getElementById('eventList');
   const listCount = document.getElementById('listCount');
   const flash = document.getElementById('flash');
 
   const fallbackImg = 'img/placeholder.svg';
   let events = [];
+  let auth = null;
 
+  // Mensaje flash reutilizable.
   const msg = (text, ok = true) => {
     flash.textContent = text;
     flash.className = 'msg show ' + (ok ? 'msg--ok' : 'msg--err');
@@ -37,28 +45,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const isLive = (s) => /en vivo|live|directo/i.test(s || '');
   const preview = (e) => e.image || fallbackImg;
 
-  // Sesión (simple, en memoria).
-  function checkLogin() {
-    const ok = sessionStorage.getItem('spv_admin') === CONFIG.ADMIN_PASS;
-    loginView.hidden = ok;
-    panelView.hidden = !ok;
-    return ok;
+  // --- Autenticación Firebase ---
+  function ensureAuth() {
+    if (!auth) {
+      if (!firebase || !firebase.auth) throw new Error('SinFirebase');
+      if (!FIREBASE.apiKey) throw new Error('SinConfFirebase');
+      firebase.initializeApp(FIREBASE);
+      auth = firebase.auth();
+    }
+    return auth;
   }
 
-  loginBtn.addEventListener('click', () => {
-    if (loginPass.value === CONFIG.ADMIN_PASS) {
-      sessionStorage.setItem('spv_admin', CONFIG.ADMIN_PASS);
-      loginError.classList.remove('show');
+  // Estado de sesión: muestra login o panel según haya usuario logueado.
+  ensureAuth();
+  auth.onAuthStateChanged((user) => {
+    const ok = !!user;
+    loginView.hidden = ok;
+    panelView.hidden = !ok;
+    if (ok) load();
+  });
+
+  function mapAuthError(err) {
+    const code = err && err.code;
+    if (code === 'auth/invalid-email') return 'Correo con formato inválido.';
+    if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') return 'Correo o contraseña incorrectos.';
+    if (code === 'auth/too-many-requests') return 'Demasiados intentos. Espera unos minutos y reintenta.';
+    if (code === 'auth/network-request-failed') return 'Sin conexión. Revisa tu internet.';
+    return 'No se pudo iniciar sesión (' + (err && err.code) + ').';
+  }
+
+  loginForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    loginError.classList.remove('show');
+    loginBtn.disabled = true;
+    try {
+      await auth.signInWithEmailAndPassword(loginEmail.value.trim(), loginPass.value);
       loginPass.value = '';
-      load();
-    } else {
+    } catch (err) {
+      loginError.textContent = mapAuthError(err);
       loginError.classList.add('show');
+    } finally {
+      loginBtn.disabled = false;
     }
   });
 
   logoutBtn.addEventListener('click', () => {
-    sessionStorage.removeItem('spv_admin');
-    checkLogin();
+    auth.signOut().catch(() => {});
   });
 
   // --- Formulario ---
@@ -87,13 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       events = editing
         ? await Store.update(evento)
-        : await Store.add({ ...evento, id: 0 }); // el script asigna el id nuevo
+        : await Store.add(evento);
       msg(editing ? 'Evento actualizado.' : 'Evento agregado.');
       resetForm();
       renderList();
     } catch (err) {
       console.error(err);
-      msg('No se pudo guardar: ' + (CONFIG.GOOGLE_APP_URL ? 'revisa tu conexión/URL.' : 'falta configurar js/config.js.'), false);
+      msg((err && err.code === 'permission-denied')
+        ? 'Sin permisos. Inicia sesión o ajusta las reglas de Firestore.'
+        : 'No se pudo guardar el evento.', false);
     }
   });
 
@@ -108,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="list__item">
         <img src="${preview(e)}" alt="" onerror="this.src='${fallbackImg}'">
         <div class="list__item-body">
-          <div class="list__item-title">${e.title}</div>
+          <div class="list__item-title">${e.title || ''}</div>
           <div class="list__item-cat">${e.category || 'Deportes'} · <span class="${isLive(e.status) ? 'badge-live' : 'badge-prox'}">${e.status || 'HOY'}</span></div>
         </div>
         <div class="list__actions">
@@ -163,12 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
       renderList();
     } catch (err) {
       console.error(err);
-      msg(CONFIG.GOOGLE_APP_URL
-        ? 'No se pudo conectar con la hoja de Google.'
-        : 'Falta tu URL en js/config.js (ver GUIA-ADMIN.md).', false);
+      msg(FIREBASE.apiKey
+        ? 'No se pudo conectar con Firestore.'
+        : 'Configura Firebase en js/config.js (ver GUIA-ADMIN.md).', false);
     }
   }
-
-  if (!checkLogin()) return;
-  load();
 });
