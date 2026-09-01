@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const requestedId = parseInt(params.get('id'), 10);
 
   const frame = document.getElementById('liveFrame');
+  const video = document.getElementById('liveVideo');
   const stageCover = document.getElementById('stageCover');
   const coverCountdown = document.getElementById('coverCountdown');
   const coverMessage = document.getElementById('coverMessage');
@@ -27,8 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const fallbackImg = 'img/placeholder.svg';
 
   let current = null;
-  let lastSrc = '';
   let timer = null;
+  let lastSrc = '';
+  let videoSrc = '';
+  let hls = null;
+
+  const isHLS = (u) => /\.m3u8(\?|$)/i.test(u);
 
   // ---------- Ayudas visuales ----------
   function setStatus(status) {
@@ -36,18 +41,86 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.className = 'player__status ' + (status === 'EN VIVO' ? 'is-live' : '');
   }
 
-  function showFrame(src) {
+  function stopStream() {
+    clearInterval(timer);
+    if (hls) {
+      try { hls.destroy(); } catch (e) {}
+      hls = null;
+    }
+    if (video) {
+      if (video.pause) video.pause();
+      video.removeAttribute('src');
+      video.style.display = 'none';
+    }
+    if (frame) frame.style.display = 'none';
+  }
+
+  // ---------- Reproducción por tipo ----------
+  function playHLS(src) {
+    // No reiniciar si el mismo stream ya está visible (evita reinicios en render()).
+    if (video.style.display !== 'none' && videoSrc === src) {
+      stageCover.hidden = true;
+      return;
+    }
+    stopStream();
+    videoSrc = src;
+    frame.style.display = 'none';
+    stageCover.hidden = true;
+    video.hidden = false;
+    video.style.display = '';
+    video.muted = true;
+    video.setAttribute('playsinline', 'true');
+    hintEl.textContent = 'Reproduciendo en vivo. Pulsa el icono de sonido del reproductor para activar el audio.';
+
+    const onFatal = () => {
+      showMessage('Sin transmisión disponible', 'No se encontraron transmisiones para este partido.');
+    };
+
+    if (window.Hls && Hls.isSupported()) {
+      hls = new Hls({ autoStartLoad: true, enableWorker: true });
+      hls.loadSource(src);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(() => {});
+      });
+      hls.on(Hls.Events.ERROR, (_ev, data) => {
+        if (data.fatal) {
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            hls.startLoad(); // reintenta la red
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            hls.recoverMediaError();
+          } else {
+            onFatal();
+          }
+        }
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = src;
+      video.play().catch(() => {});
+      video.addEventListener('error', () => onFatal(), { once: true });
+    } else {
+      showMessage('Sin transmisión disponible', 'Tu navegador no soporta reproducción HLS.');
+    }
+  }
+
+  function playIframe(src) {
+    stopStream();
     if (src !== lastSrc) {
       frame.src = src;
       lastSrc = src;
     }
-    frame.style.display = '';
+    video.style.display = 'none';
     stageCover.hidden = true;
+    frame.style.display = '';
     hintEl.textContent = 'Si la transmisión no se ve, la calidad varía según el origen del canal.';
   }
 
+  function showFrame(src) {
+    isHLS(src) ? playHLS(src) : playIframe(src);
+  }
+
   function showMessage(title, text) {
-    frame.style.display = 'none';
+    stopStream();
     coverCountdown.hidden = true;
     coverMessage.hidden = false;
     coverTitle.textContent = title;
@@ -56,12 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showCountdown(target) {
-    frame.style.display = 'none';
+    stopStream();
     coverMessage.hidden = true;
     coverCountdown.hidden = false;
     stageCover.hidden = false;
 
-    clearInterval(timer);
+    hintEl.textContent = 'El evento aún no ha comenzado. Se mostrará automáticamente la transmisión.';
     const update = () => {
       const remaining = (target - Date.now());
       if (remaining <= 0) { render(); return; }
@@ -69,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     update();
     timer = setInterval(update, 1000);
-    hintEl.textContent = 'El evento aún no ha comenzado. Se mostrará automáticamente la transmisión.';
   }
 
   // ---------- Estado ----------

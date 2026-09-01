@@ -30,7 +30,8 @@
   <main class="container main player-main">
     <section class="player">
       <div class="player__video">
-        <iframe id="liveFrame" src="" title="Transmisión en directo" allowfullscreen allow="encrypted-media; picture-in-picture; fullscreen"></iframe>
+  <iframe id="liveFrame" src="" title="Transmisión en directo" allowfullscreen allow="encrypted-media; picture-in-picture; fullscreen"></iframe>
+  <video id="liveVideo" class="player__video-el" playsinline controls preload="metadata"></video>
         <div id="stageCover" class="stage-cover" hidden>
           <div id="coverCountdown" class="cover-countdown">
             <p class="cover__kicker">El evento comienza en</p>
@@ -67,6 +68,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/store.js"></script>
